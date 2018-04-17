@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+  # PostgreSQL
+  postgres:
+    restart: always
+    image: postgres:latest
+    ports:
+      - "5432"
+
+  # RabbitMQ
+  rabbit:
+    restart: always
+    hostname: rabbit
+    image: rabbitmq:latest
+    ports:
+      - "5672"  # we forward this port because it's useful for debugging
+      - "15673"  # here, we can access rabbitmq management plugin
+
+  web:
+    restart: always
+    build: ./web
+    command: python manage.py runserver 0.0.0.0:8009
+    ports:
+      - "8009:8009"
+    links:
+      - postgres:postgres
+      - rabbit:rabbit
+    volumes:
+      - ./web:/usr/src/app
+
+  # Celery worker
+  worker:
+    restart: always
+    build: ./web
+    command: celery worker -A polling -l info
+    volumes:
+      - ./web:/usr/src/app
+    links:
+      - postgres:postgres
+      - rabbit:rabbit
+    depends_on:
+      - rabbit

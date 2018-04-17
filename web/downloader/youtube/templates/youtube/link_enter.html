@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+    <div class="form-style">
+        
+            <form method="post">
+            {% csrf_token %}
+             <input type="text" size="40" name="url" id="url" placeholder="Enter URL">
+             <input type="submit" value="Start">
+            </form>
+    </div>
+
+
+{% endblock content %}
