@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 import youtube_dl
 from downloader.youtube.models import UserRequests
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 def link_enter_page(request):
     if request.method == 'POST':
         url = request.POST.get('url')
+        email = request.POST.get('email')
         if url:
             with youtube_dl.YoutubeDL() as ydl:
                 info_dict = ydl.extract_info(url, download=False)
