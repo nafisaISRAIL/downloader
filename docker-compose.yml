@@ -1,21 +1,19 @@
 version: '2'
 
 services:
-  # PostgreSQL
   postgres:
     restart: always
     image: postgres:latest
     ports:
       - "5432"
 
-  # RabbitMQ
   rabbit:
     restart: always
     hostname: rabbit
     image: rabbitmq:latest
     ports:
-      - "5672"  # we forward this port because it's useful for debugging
-      - "15673"  # here, we can access rabbitmq management plugin
+      - "5672"
+      - "15673"
 
   web:
     restart: always
@@ -28,12 +26,13 @@ services:
       - rabbit:rabbit
     volumes:
       - ./web:/usr/src/app
+      - ./data:/usr/src/app/data
+      - ./media:/usr/src/app/media
 
-  # Celery worker
   worker:
     restart: always
     build: ./web
-    command: celery worker -A polling -l info
+    command: celery worker -A downloader -l info
     volumes:
       - ./web:/usr/src/app
     links:
