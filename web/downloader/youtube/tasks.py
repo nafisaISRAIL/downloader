@@ -6,6 +6,8 @@ from downloader.youtube.models import UserRequests
 import os
 from django.core.mail import send_mail
 from django.conf import settings
+import tempfile
+from django.core.files import File
 
 logger = logging.getLogger(__name__)
 
@@ -27,14 +29,26 @@ def extract_mp3(url, email):
         video_title = info_dict.get('title')
         video_size = formats.get('filesize')
         video_url = formats.get('url')
-        UserRequests.objects.create(
+        ur = UserRequests.objects.create(
             url=url,
             title=video_title,
             size=video_size,
             email=email,
             download_url=video_url)
+        ydl_opts = {
+            'format': 'bestaudio/best',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }]
+    }
 
-        send_email.delay()
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            # ur.media = ydl.download([url])
+            ur.media.save(name=video_title, content=ydl.download([url]))
+
+        send_email.delay(email, video_title, video_url)
 
 
 @shared_task
@@ -42,6 +56,9 @@ def send_email(email, video_title, video_url):
     subject = 'Download ' + video_title
     message = video_url
     email_from = settings.EMAIL_HOST_USER
-    recipient_list = [email,]
+    recipient_list = [email, ]
 
     send_mail(subject, message, email_from, recipient_list)
+
+
+
