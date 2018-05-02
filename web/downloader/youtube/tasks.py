@@ -6,24 +6,24 @@ from downloader.youtube.models import UserRequests
 import os
 from django.core.mail import send_mail
 from django.conf import settings
-import tempfile
 from django.core.files import File
 
 logger = logging.getLogger(__name__)
 
 
-def my_hook(d):
-    if d['status'] == 'finished':
-        file_tuple = os.path.split(os.path.abspath(d['filename']))
-        print("Done downloading {}".format(file_tuple[1]))
-    if d['status'] == 'downloading':
-        print(d['filename'], d['_percent_str'], d['_eta_str'])
-
-
 @shared_task
 def extract_mp3(url, email):
-    with youtube_dl.YoutubeDL() as ydl:
-        info_dict = ydl.extract_info(url, download=False)
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'outtmpl': 'media/%(title)s.%(ext)s',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+    }
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        info_dict = ydl.extract_info(url)
     if info_dict:
         formats = info_dict['formats'][0]
         video_title = info_dict.get('title')
@@ -35,20 +35,10 @@ def extract_mp3(url, email):
             size=video_size,
             email=email,
             download_url=video_url)
-        ydl_opts = {
-            'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }]
-    }
+        ur.media = ydl.download([url])
+        ur.save()
 
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            # ur.media = ydl.download([url])
-            ur.media.save(name=video_title, content=ydl.download([url]))
-
-        send_email.delay(email, video_title, video_url)
+        send_email.delay(ur.email, ur.title, ur.media.url)
 
 
 @shared_task
@@ -59,6 +49,3 @@ def send_email(email, video_title, video_url):
     recipient_list = [email, ]
 
     send_mail(subject, message, email_from, recipient_list)
-
-
-

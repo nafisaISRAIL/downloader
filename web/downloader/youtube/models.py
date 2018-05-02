@@ -9,3 +9,6 @@ class UserRequests(models.Model):
     size = models.IntegerField(null=True)
     created_date = models.DateTimeField(auto_now_add=True)
     media = models.FileField(upload_to='uploads/', null=True)
+
+    def __strt__(self):
+        return (self.email, self.title)

@@ -1,26 +1,65 @@
-.form-style {
-    max-width: 700px;
-    padding: 150px 300px 500px 300px;
+body {
+    background-color: #FFFFFF;
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
 }
 
-input[type="submit"] {
-    background-color:  #f44336;
-    border: none;
-    color: white;
-    padding: 10px 22px;
-    text-align: center;
-    font-size: 15px;
-    border-radius: 12px;
+.picture img{
+    position: absolute;
+    width: 1366px;
+    height: 340px;
+    left: 0px;
+    top: 537px;
 }
 
-input[type="text"] {
-   border: 1px solid #cccccc;
-   border-radius: 15px;
-   background: #ffffff;
-   outline: none;
-   height: 30px;
-   width: 420px;
-   color: #cccccc;
-   font-size: 15px;
-   font-family: Tahoma;
+form input[type="text"] {
+    width: 666px;
+    height: 46px;
+    background-color: #FFFFFF;
+    border: 1px solid #EAEAEA;
+    box-sizing: border-box;
+    box-shadow: 1px 4px 7px rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
 }
+
+form input[type="submit"] {
+    background-color: #D477CF;
+    margin-top: 25px;
+    margin-left: 200px;
+    width: 270px;
+    height: 46px;
+    font-size: 20px;
+    font-family: Roboto;
+    font-style: Medium;
+    color: #FFFFFF;
+    border:0 none;
+    border-radius: 7px;
+    cursor:pointer;
+}
+
+.submit-form{
+    position: absolute;
+    width: 670px;
+    height: 120px;
+    top: 257px;
+    left: 350px;
+}
+
+#email {
+    margin-top: 24px;
+}
+
+::-moz-placeholder{
+    font-size: 16px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    word-spacing: 2px;
+}
+
+
+
+
+

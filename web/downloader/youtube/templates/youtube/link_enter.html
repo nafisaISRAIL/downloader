@@ -3,15 +3,16 @@
 
 {% block content %}
 
-    <div class="form-style">
-        
-            <form method="post">
-            {% csrf_token %}
-             <input type="text" size="40" name="url" id="url" placeholder="Enter URL">
-             <input type="text" size="40" name="email" id="email" placeholder="Enter email">
-             <input type="submit" value="Start">
-            </form>
+    <div class="submit-form">
+        <form method="post">
+         {% csrf_token %}
+         <input type="text" size="40" name="url" id="url" placeholder="Enter your URL">
+         <input type="text" size="40" name="email" id="email" placeholder="Enter your e-mail">
+         <input type="submit" value="Download"> 
+        </form>
     </div>
-
+    <div class="picture">
+         <img src="media/1.png"> 
+    </div>
 
 {% endblock content %}
